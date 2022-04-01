@@ -53,8 +53,10 @@ public:
     int insert(int key);
     set<int> allvals();
     void clear();
+    void remove(int key);
     int getLocalDepth();
     int incLocalDepth();
+    void search(int key,int num);
     ~bucket();
 };
 /* #endregion */
@@ -72,11 +74,13 @@ private:
 public:
     directory(int depth, int size_assign);
     void insert(int key, bool);
+    void delete_value(int key);
+    void search(int key);
     string bucket_rep(int n);
     int mirrorIndex(int bucket_num, int depth);
     // void remove(int key, int mode);
     // void update(int key, string value);
-    void search(int key);
+    
 
     // void display(bool duplicates);
     ~directory();
@@ -123,6 +127,30 @@ void bucket::clear()
     values.clear();
     // return SUCCESS;
 }
+
+void bucket::remove(int key)
+{
+    if (values.find(key) == values.end())
+        cout << "key " << key << " does not exist\n";
+    else
+    {
+        cout << "key removed successfully.\n";
+        values.erase(key);
+    }
+}
+
+void bucket::search(int key,int buck)
+{
+    if (values.find(key) == values.end())
+        cout << "key " << key << " does not exist\n";
+    else
+    {
+        cout << "key found successfully in bucket: "
+             << buck;
+        values.erase(key);
+    }
+}
+
 
 bucket::~bucket()
 {
@@ -175,7 +203,7 @@ void directory::insert(int key, bool stat_reins = false)
     }
     else if (status == FULL)
     {
-        cout << "Split Occured - bucket: "<<bucket_num<<" reached capacity \n";
+        cout << "Split Occured - bucket: " << bucket_num << " reached capacity \n";
         split(bucket_num);
         insert(key);
     }
@@ -210,6 +238,18 @@ void directory::split(int bucket_num)
         insert(i, 1);
 }
 
+void directory::search(int key)
+{
+    int bucket_no = hash_func(key);
+    cout << "Searching key " << key << " in bucket " << bucket_rep(bucket_no) << endl;
+    ptr_to_buckets[bucket_no]->search(key,bucket_no);
+}
+
+void directory::delete_value(int key)
+{
+    int bucket_num = hash_func(key);
+    ptr_to_buckets[bucket_num]->remove(key);
+}
 directory::~directory()
 {
 }
