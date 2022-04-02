@@ -62,6 +62,8 @@ public:
     int incLocalDepth();
     int getCreationTime();
     void search(int key, string id);
+    void modifyCreationTime();
+    void showall();
     ~bucket();
 };
 /* #endregion */
@@ -102,9 +104,20 @@ bucket::bucket(int depth, int size_assign)
     creation_time = ctr++;
 }
 
+void bucket::showall()
+{
+    for (auto i : values)
+        cout << i << " ";
+}
+
 int bucket::getCreationTime()
 {
     return creation_time;
+}
+
+void bucket::modifyCreationTime()
+{
+    creation_time = ctr++;
 }
 
 int bucket::getLocalDepth()
@@ -195,13 +208,22 @@ void directory::statusUpdate()
 {
     cout /*<< "global depth is:" */ << global_depth << "\n";
     int numBuck = 0;
+    for (int i = 0; i < ptr_to_buckets.size(); i++)
+    {
+        cout << "bucket:" << bucket_rep(i) << " created at:" << ptr_to_buckets[i]->getCreationTime() << " "
+             << ptr_to_buckets[i]->getNumKeys() << " "
+             << ptr_to_buckets[i]->getLocalDepth()
+             << "\n";
+        ptr_to_buckets[i]->showall();
+        cout << "\n";
+    }
     auto copy_of_dir_ptrs = ptr_to_buckets;
     sort(
         all(copy_of_dir_ptrs),
         [](bucket *a, bucket *b)
         {
             return (a->getCreationTime() >
-                    b->getCreationTime());
+                    b->getCreationTime());//higher creation tiem gets outputted first
         });
     copy_of_dir_ptrs.erase(unique(all(copy_of_dir_ptrs)), copy_of_dir_ptrs.end());
     for (auto i : copy_of_dir_ptrs)
@@ -210,7 +232,7 @@ void directory::statusUpdate()
     cout << numBuck << "\n";
     for (auto i : copy_of_dir_ptrs)
         if (i->getNumKeys() != 0)
-            cout << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
+            cout << "created at:" << i->getCreationTime() << " " << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
 }
 int directory::hash_func(int val)
 {
@@ -279,9 +301,12 @@ void directory::split(int bucket_num)
     if (newLD > global_depth)
         dir_dbl();
     int newBucket_num = mirrorIndex(bucket_num, newLD);
+    // ptr_to_buckets[bucket_num]->modifyCreationTime();
+    //no modification of creation time
     ptr_to_buckets[newBucket_num] = new bucket(newLD, size);
     auto buffer_for_reinserting = ptr_to_buckets[bucket_num]->allvals();
     ptr_to_buckets[bucket_num]->clear();
+
     for (auto i : buffer_for_reinserting)
         insert(i, 1);
 }
