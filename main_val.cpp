@@ -143,24 +143,26 @@ void bucket::clear()
 void bucket::remove(int key)
 {
     if (values.find(key) == values.end())
-        cout << "key " << key << " does not exist\n";
+    { // cout << "key " << key << " does not exist\n";
+    }
     else
     {
-        cout << "key removed successfully.\n";
-        cout << "old size:" << values.size() << "\n";
+        // cout << "key removed successfully.\n";
+        // cout << "old size:" << values.size() << "\n";
         values.erase(values.find(key));
-        cout << "new size:" << values.size() << "\n";
+        // cout << "new size:" << values.size() << "\n";
     }
 }
 
 void bucket::search(int key, string buck)
 {
     if (values.find(key) == values.end())
-        cout << "key " << key << " does not exist\n";
+    {
+        // cout << "key " << key << " does not exist\n";
+    }
     else
     {
-        cout << "key found successfully in bucket: "
-             << buck << "\n";
+        // cout << "key found successfully in bucket: "<< buck << "\n";
     }
 }
 
@@ -191,7 +193,7 @@ bool directory::personalcomparator(bucket *a, bucket *b)
 }
 void directory::statusUpdate()
 {
-    cout << "global depth is:" << global_depth << "\n";
+    cout /*<< "global depth is:" */ << global_depth << "\n";
     int numBuck = 0;
     auto copy_of_dir_ptrs = ptr_to_buckets;
     sort(
@@ -240,23 +242,27 @@ void directory::insert(int key, bool stat_reins = false)
     int status = ptr_to_buckets[bucket_num]->insert(key);
     if (status == PRESENT)
     {
-        cout << "Key " << key << " already exists in "
-             << bucket_rep(bucket_num) << "\n";
+        // cout << "Key " << key << " already exists in "
+        //      << bucket_rep(bucket_num) << "\n";
     }
     else if (status == FULL)
     {
-        cout << "Split Occured - bucket: " << bucket_rep(bucket_num) << " reached capacity \n";
+        // cout << "Split Occured - bucket: " << bucket_rep(bucket_num) << " reached capacity \n";
         split(bucket_num);
         insert(key);
     }
     else // SUCCESS
     {
         if (stat_reins)
-            cout << "Reinserted key " << key << " in bucket "
-                 << bucket_rep(bucket_num) << "\n";
+        {
+            // cout << "Reinserted key " << key << " in bucket "
+            //      << bucket_rep(bucket_num) << "\n";
+        }
         else
-            cout << "Inserted key " << key << " in bucket "
-                 << bucket_rep(bucket_num) << "\n";
+        {
+            // cout << "Inserted key " << key << " in bucket "
+            //  << bucket_rep(bucket_num) << "\n";
+        }
     }
 }
 
@@ -283,7 +289,7 @@ void directory::split(int bucket_num)
 void directory::search(int key)
 {
     int bucket_no = hash_func(key);
-    cout << "Searching key " << key << " in bucket " << bucket_rep(bucket_no) << "\n";
+    // cout << "Searching key " << key << " in bucket " << bucket_rep(bucket_no) << "\n";
     ptr_to_buckets[bucket_no]->search(key, bucket_rep(bucket_no));
 }
 
