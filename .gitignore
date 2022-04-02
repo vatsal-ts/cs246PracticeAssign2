@@ -12,7 +12,7 @@ secret.cpp
 *.gch
 *.pch
 nitish_ready.cpp
-
+nitish_ready
 # Compiled Dynamic libraries
 *.so
 *.dylib
