@@ -225,16 +225,24 @@ void directory::statusUpdate()
         [](bucket *a, bucket *b)
         {
             return (a->getCreationTime() >
-                    b->getCreationTime());//higher creation tiem gets outputted first
+                    b->getCreationTime()); // higher creation tiem gets outputted first
         });
     copy_of_dir_ptrs.erase(unique(all(copy_of_dir_ptrs)), copy_of_dir_ptrs.end());
+    /*
+    // Non-empty buckets, ordered by creation time
     for (auto i : copy_of_dir_ptrs)
         if (i->getNumKeys() != 0)
             numBuck++;
     cout << numBuck << "\n";
     for (auto i : copy_of_dir_ptrs)
         if (i->getNumKeys() != 0)
-            cout /*<< "created at:" << i->getCreationTime() << " " */<< i->getNumKeys() << " " << i->getLocalDepth() << "\n";
+            cout
+            //<< "created at:" << i->getCreationTime() << " "
+            << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
+    */
+    cout << copy_of_dir_ptrs.size() << "\n";
+    for (auto i : copy_of_dir_ptrs)
+        cout << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
 }
 int directory::hash_func(int val)
 {
@@ -304,7 +312,7 @@ void directory::split(int bucket_num)
         dir_dbl();
     int newBucket_num = mirrorIndex(bucket_num, newLD);
     // ptr_to_buckets[bucket_num]->modifyCreationTime();
-    //no modification of creation time
+    // no modification of creation time
     ptr_to_buckets[newBucket_num] = new bucket(newLD, size);
     auto buffer_for_reinserting = ptr_to_buckets[bucket_num]->allvals();
     ptr_to_buckets[bucket_num]->clear();
