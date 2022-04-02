@@ -1,4 +1,4 @@
-/* #region   */
+/* #region typedefs faster code hehe  */
 #include <bits/stdc++.h>
 using namespace std;
 #define gc getchar_unlocked
@@ -41,6 +41,7 @@ typedef vector<vll> vvll;
 #define SUCCESS 1
 /* #endregion */
 
+// creation time counter
 ll ctr = 1;
 
 /* #region  bucket class definitions */
@@ -340,40 +341,46 @@ directory::~directory()
 
 int main()
 {
+
+    /* #region  global depth and bucket size input */
     int gl_depth_inp, bucket_size;
     cin >> gl_depth_inp >> bucket_size;
     directory dir(gl_depth_inp, bucket_size);
+    /* #endregion */
+
+    // Menu listing
     for (int i = 0; i != -1;)
     {
         int option;
         cin >> option;
-        if (option == 2)
+        if (option == 2) // Insertion
         {
             int val;
             cin >> val;
             dir.insert(val);
         }
-        else if (option == 3)
+        else if (option == 3) // Searching
         {
             int val;
             cin >> val;
             dir.search(val);
         }
-        else if (option == 4)
+        else if (option == 4) // Deletion
         {
             int val;
             cin >> val;
             dir.delete_value(val);
         }
-        else if (option == 5)
+        else if (option == 5) // Status Update
         {
             dir.statusUpdate();
         }
-        else
+        else // quit
         {
             i = -1;
         }
     }
+    /* #region  random testing */
     // dir.insert(0);
     // dir.insert(2);
     // dir.insert(4);
@@ -382,4 +389,5 @@ int main()
     // dir.insert(8);
     // for (int i = 0; i < 50; i += 2)
     //     dir.insert(i);
+    /* #endregion */
 }
