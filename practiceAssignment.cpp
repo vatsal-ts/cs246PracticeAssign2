@@ -208,6 +208,7 @@ void directory::statusUpdate()
 {
     cout /*<< "global depth is:" */ << global_depth << "\n";
     int numBuck = 0;
+    /*
     for (int i = 0; i < ptr_to_buckets.size(); i++)
     {
         cout << "bucket:" << bucket_rep(i) << " created at:" << ptr_to_buckets[i]->getCreationTime() << " "
@@ -217,6 +218,7 @@ void directory::statusUpdate()
         ptr_to_buckets[i]->showall();
         cout << "\n";
     }
+    */
     auto copy_of_dir_ptrs = ptr_to_buckets;
     sort(
         all(copy_of_dir_ptrs),
@@ -232,7 +234,7 @@ void directory::statusUpdate()
     cout << numBuck << "\n";
     for (auto i : copy_of_dir_ptrs)
         if (i->getNumKeys() != 0)
-            cout << "created at:" << i->getCreationTime() << " " << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
+            cout /*<< "created at:" << i->getCreationTime() << " " */<< i->getNumKeys() << " " << i->getLocalDepth() << "\n";
 }
 int directory::hash_func(int val)
 {
