@@ -41,12 +41,15 @@ typedef vector<vll> vvll;
 #define SUCCESS 1
 /* #endregion */
 
+ll ctr = 1;
+
 /* #region  bucket class definitions */
 class bucket
 {
 private:
     int local_depth, size; // size is always size of bucket
     set<int> values;
+    int creation_time;
 
 public:
     bucket(int, int);
@@ -55,8 +58,10 @@ public:
     void clear();
     void remove(int key);
     int getLocalDepth();
+    int getNumKeys();
     int incLocalDepth();
-    void search(int key,int num);
+    int getCreationTime();
+    void search(int key, string id);
     ~bucket();
 };
 /* #endregion */
@@ -70,6 +75,7 @@ private:
     int hash_func(int);
     void split(int bucket_no);
     void dir_dbl();
+    bool personalcomparator(bucket *a, bucket *b);
 
 public:
     directory(int depth, int size_assign);
@@ -78,9 +84,9 @@ public:
     void search(int key);
     string bucket_rep(int n);
     int mirrorIndex(int bucket_num, int depth);
+    void statusUpdate();
     // void remove(int key, int mode);
     // void update(int key, string value);
-    
 
     // void display(bool duplicates);
     ~directory();
@@ -93,6 +99,12 @@ bucket::bucket(int depth, int size_assign)
 {
     local_depth = depth;
     size = size_assign;
+    creation_time = ctr++;
+}
+
+int bucket::getCreationTime()
+{
+    return creation_time;
 }
 
 int bucket::getLocalDepth()
@@ -135,22 +147,27 @@ void bucket::remove(int key)
     else
     {
         cout << "key removed successfully.\n";
-        values.erase(key);
+        cout << "old size:" << values.size() << "\n";
+        values.erase(values.find(key));
+        cout << "new size:" << values.size() << "\n";
     }
 }
 
-void bucket::search(int key,int buck)
+void bucket::search(int key, string buck)
 {
     if (values.find(key) == values.end())
         cout << "key " << key << " does not exist\n";
     else
     {
         cout << "key found successfully in bucket: "
-             << buck;
-        values.erase(key);
+             << buck << "\n";
     }
 }
 
+int bucket::getNumKeys()
+{
+    return values.size();
+}
 
 bucket::~bucket()
 {
@@ -168,6 +185,31 @@ directory::directory(int depth, int size_assign)
     }
 }
 
+bool directory::personalcomparator(bucket *a, bucket *b)
+{
+    return (a->getCreationTime()) < (b->getCreationTime());
+}
+void directory::statusUpdate()
+{
+    cout << "global depth is:" << global_depth << "\n";
+    int numBuck = 0;
+    auto copy_of_dir_ptrs = ptr_to_buckets;
+    sort(
+        all(copy_of_dir_ptrs),
+        [](bucket *a, bucket *b)
+        {
+            return (a->getCreationTime() >
+                    b->getCreationTime());
+        });
+    copy_of_dir_ptrs.erase(unique(all(copy_of_dir_ptrs)), copy_of_dir_ptrs.end());
+    for (auto i : copy_of_dir_ptrs)
+        if (i->getNumKeys() != 0)
+            numBuck++;
+    cout << numBuck << "\n";
+    for (auto i : copy_of_dir_ptrs)
+        if (i->getNumKeys() != 0)
+            cout << i->getNumKeys() << " " << i->getLocalDepth() << "\n";
+}
 int directory::hash_func(int val)
 {
     return (val & ((1 << global_depth) - 1));
@@ -198,12 +240,12 @@ void directory::insert(int key, bool stat_reins = false)
     int status = ptr_to_buckets[bucket_num]->insert(key);
     if (status == PRESENT)
     {
-        cout << "Key " << key << " exists in "
+        cout << "Key " << key << " already exists in "
              << bucket_rep(bucket_num) << "\n";
     }
     else if (status == FULL)
     {
-        cout << "Split Occured - bucket: " << bucket_num << " reached capacity \n";
+        cout << "Split Occured - bucket: " << bucket_rep(bucket_num) << " reached capacity \n";
         split(bucket_num);
         insert(key);
     }
@@ -241,8 +283,8 @@ void directory::split(int bucket_num)
 void directory::search(int key)
 {
     int bucket_no = hash_func(key);
-    cout << "Searching key " << key << " in bucket " << bucket_rep(bucket_no) << endl;
-    ptr_to_buckets[bucket_no]->search(key,bucket_no);
+    cout << "Searching key " << key << " in bucket " << bucket_rep(bucket_no) << "\n";
+    ptr_to_buckets[bucket_no]->search(key, bucket_rep(bucket_no));
 }
 
 void directory::delete_value(int key)
@@ -257,11 +299,46 @@ directory::~directory()
 
 int main()
 {
-    directory dir(1, 3);
-    dir.insert(0);
-    dir.insert(2);
-    dir.insert(4);
-    dir.insert(1);
-    dir.insert(6);
-    dir.insert(8);
+    int gl_depth_inp, bucket_size;
+    cin >> gl_depth_inp >> bucket_size;
+    directory dir(gl_depth_inp, bucket_size);
+    for (int i = 0; i != -1;)
+    {
+        int option;
+        cin >> option;
+        if (option == 2)
+        {
+            int val;
+            cin >> val;
+            dir.insert(val);
+        }
+        else if (option == 3)
+        {
+            int val;
+            cin >> val;
+            dir.search(val);
+        }
+        else if (option == 4)
+        {
+            int val;
+            cin >> val;
+            dir.delete_value(val);
+        }
+        else if (option == 5)
+        {
+            dir.statusUpdate();
+        }
+        else
+        {
+            i = -1;
+        }
+    }
+    // dir.insert(0);
+    // dir.insert(2);
+    // dir.insert(4);
+    // dir.insert(1);
+    // dir.insert(6);
+    // dir.insert(8);
+    // for (int i = 0; i < 50; i += 2)
+    //     dir.insert(i);
 }
