@@ -107,7 +107,7 @@ bucket::bucket(int depth, int size_assign)
     local_depth = depth;
     size = size_assign;
     creation_time = ctr++;
-    // cout << "new bucket: " << creation_time << "\n";
+    cout << "new bucket: " << creation_time << "\n";
 }
 
 void bucket::showall()
@@ -166,7 +166,7 @@ void bucket::remove(int key)
     }
     else
     {
-        // cout << key << " key removed successfully.\n";
+        cout << key << " key removed successfully.\n";
         // cout << "old size:" << values.size() << "\n";
         values.erase(values.find(key));
         // cout << "new size:" << values.size() << "\n";
@@ -250,12 +250,10 @@ void directory::statusUpdate()
     for (auto i : copy_of_dir_ptrs)
     {
         cout
-            // << "created at:" << i->getCreationTime() << " "
-            << i->getNumKeys() << " " << i->getLocalDepth() << "\n"
-            // <<"all vals are:";
-            // i->showall();
-            // cout<<"\n"
-            ;
+            << "created at:" << i->getCreationTime() << " "
+            << i->getNumKeys() << " " << i->getLocalDepth() << "\n all vals are:";
+            i->showall();
+            cout<<"\n";
     }
 }
 int directory::hash_func(int val)
@@ -286,7 +284,7 @@ int directory::mirrorIndex(int bucket_num, int depth)
 void directory::insert(int key, bool stat_reins = false)
 {
     int bucket_num = hash_func(key);
-    // cout << "bucket :" << bucket_num << " " << bucket_rep(bucket_num) << "\n";
+    cout << "bucket :" << bucket_num << " " << bucket_rep(bucket_num) << "\n";
     int status = ptr_to_buckets[bucket_num]->insert(key);
     if (status == PRESENT)
     {
@@ -295,7 +293,7 @@ void directory::insert(int key, bool stat_reins = false)
     }
     else if (status == FULL)
     {
-        // cout << "Split Occured - bucket: " << bucket_rep(bucket_num) << " reached capacity \n";
+        cout << "Split Occured - bucket: " << bucket_rep(bucket_num) << " reached capacity \n";
         split(bucket_num);
         insert(key);
     }
@@ -303,13 +301,13 @@ void directory::insert(int key, bool stat_reins = false)
     {
         if (stat_reins)
         {
-            // cout << "Reinserted key " << key << " in bucket "
-            //      << bucket_rep(bucket_num) << "\n";
+            cout << "Reinserted key " << key << " in bucket "
+                 << bucket_rep(bucket_num) << "\n";
         }
         else
         {
-            // cout << "Inserted key " << key << " in bucket "
-            //      << bucket_rep(bucket_num) << "\n";
+            cout << "Inserted key " << key << " in bucket "
+                 << bucket_rep(bucket_num) << "\n";
         }
     }
 }
@@ -323,11 +321,11 @@ void directory::dir_dbl()
 
 void directory::split(int bucket_num)
 {
-    // cout << bucket_num << " is split\n";
+    cout << bucket_num << " is split\n";
     int newLD = ptr_to_buckets[bucket_num]->incLocalDepth();
     if (newLD > global_depth)
         dir_dbl();
-    // cout << newLD << " as new local depth.\n";
+    cout << newLD << " as new local depth.\n";
     // error here you want to find the mirror
     // of something else
     // int smallest = bucket_num % (1 << (newLD - 1));
@@ -339,11 +337,11 @@ void directory::split(int bucket_num)
     cout << ptr_to_buckets[newBucket_num]->getCreationTime() << " " << newBucket_num << " created.\n";
     auto buffer_for_reinserting = ptr_to_buckets[bucket_num]->allvals();
     ptr_to_buckets[bucket_num]->clear();
-    auto index_diff = 1 << newLD;
-    auto dir_size = 1 << global_depth;
-    for (auto i = newBucket_num - index_diff; i >= 0; i -= index_diff)
+    auto index_diff = 1<<newLD;
+    auto dir_size = 1<<global_depth;
+    for( auto i=newBucket_num-index_diff ; i>=0 ; i-=index_diff )
         ptr_to_buckets[i] = ptr_to_buckets[newBucket_num];
-    for (auto i = newBucket_num + index_diff; i < dir_size; i += index_diff)
+    for(auto i=newBucket_num+index_diff ; i<dir_size ; i+=index_diff )
         ptr_to_buckets[i] = ptr_to_buckets[newBucket_num];
     for (auto i : buffer_for_reinserting)
         insert(i, 1);
