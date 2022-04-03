@@ -1,6 +1,8 @@
 # Prerequisites
 *.d
 secret.cpp
+.vscode
+.cph
 
 # Compiled Object files
 *.slo
