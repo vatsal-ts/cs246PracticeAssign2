@@ -230,7 +230,7 @@ void directory::statusUpdate()
         all(copy_of_dir_ptrs),
         [](bucket *a, bucket *b)
         {
-            return (a->getCreationTime() >
+            return (a->getCreationTime() <
                     b->getCreationTime()); // higher creation tiem gets outputted first
         });
     copy_of_dir_ptrs.erase(unique(all(copy_of_dir_ptrs)), copy_of_dir_ptrs.end());
